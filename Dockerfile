@@ -7,7 +7,6 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONWARNINGS="ignore:Unverified HTTPS request"
 
-
 # Install dependencies for PyAudio
 RUN apt-get update && apt-get install -y \
     gcc \
