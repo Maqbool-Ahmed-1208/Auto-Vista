@@ -2,7 +2,7 @@ name: Keep Private HF Space Alive
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "* * * * *"
 
   workflow_dispatch:
 
