@@ -1,0 +1,102 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Environment variables
+.env
+.env.*
+
+# Virtual environments
+env/
+.venv/
+venv/
+ENV/
+
+# VS Code settings
+.vscode/
+
+# Data files
+*.xlsx
+*.csv
+*.tsv
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python egg files
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Logs
+*.log
+
+# Misc
+*.bak
+*.swp
+*.swo
+
+# Ignore model files and large downloads
+*.bin
+*.h5
+*.ckpt
+*.pt
+*.pth
+
+# Ignore outputs
+*.out
+*.tmp
+
+# Ignore Python and Jupyter temp files
+*.tmp
+*.temp
+*~
+*.bak
+*.swp
+*.swo
+*.pyc
+*.pyo
+*$py.class
+*.python
+# Jupyter Notebook temp files
+**/tempCodeRunnerFile.*
+
+# CONFIG.CFG
+*.cfg
+
+*assembly_ai.py
+*stt_routes.py
+*stt.py
+
+*test.ipynb
+*chat1.html
+*chat2.html
+*chat3.html
+*chat4.html
+*chat5.html
+*chat6.html
+*chat7.html
+*chat8.html
+*test.html
+*assembly_ai_transcriber_without_mic.py
+*assembly_ai_transcriber_old.py
+*ws_transcriber_old.py
+*transcribe_old.py
+*ws_speak.py
+*endpoint_tester.ipynb
+*stt_end.py
+*speak_old.py
+*chat_old.py
+*unilever_logo1.png
+
+*.png
+*config_old.py
+*speak.py
+*transcribe.py
+*chat_old.html

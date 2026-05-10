@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AutoVista - Your window to every car detail</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #1a3a5f;
+            --secondary-color: #2c5f8a;
+            --accent-color: #e63946;
+            --accent-light: #ff6b7a;
+            --text-color: #333;
+            --bg-color: #f5f7fa;
+            --message-user-bg: #e3f2fd;
+            --message-assistant-bg: #fff;
+            --border-color: #d1d9e6;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --error-color: #f44336;
+            --card-bg: #ffffff;
+            --sidebar-bg: #ffffff;
+        }
+
+        .dark-mode {
+            --primary-color: #2c5f8a;
+            --secondary-color: #3a7bb3;
+            --accent-color: #ff6b7a;
+            --accent-light: #ff8d99;
+            --text-color: #e0e0e0;
+            --bg-color: #1a1f2e;
+            --message-user-bg: #2a3c4f;
+            --message-assistant-bg: #252a3a;
+            --border-color: #3a4152;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --error-color: #f44336;
+            --card-bg: #252a3a;
+            --sidebar-bg: #1e2333;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            background-image: radial-gradient(circle at 10% 20%,
+                    rgba(26, 58, 95, 0.05) 0%,
+                    transparent 20%),
+                radial-gradient(circle at 90% 80%,
+                    rgba(230, 57, 70, 0.05) 0%,
+                    transparent 20%);
+        }
+
+        .dark-mode body {
+            background-image: radial-gradient(circle at 10% 20%,
+                    rgba(44, 95, 138, 0.1) 0%,
+                    transparent 20%),
+                radial-gradient(circle at 90% 80%,
+                    rgba(255, 107, 122, 0.1) 0%,
+                    transparent 20%);
+        }
+
+        .header {
+            background: linear-gradient(135deg,
+                    var(--primary-color),
+                    var(--secondary-color));
+            color: white;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            z-index: 10;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.1;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: bold;
+            font-size: 1.3rem;
+            z-index: 1;
+        }
+
+        .logo-icon {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .logo i {
+            font-size: 1.5rem;
+        }
+
+        .tagline {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 2px;
+            font-weight: normal;
+        }
+
+        .controls {
+            display: flex;
+            gap: 0.5rem;
+            z-index: 1;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            transition: all 0.2s;
+            backdrop-filter: blur(5px);
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 300px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s;
+            box-shadow: var(--shadow);
+        }
+
+        .sidebar.hidden {
+            transform: translateX(-100%);
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            background-color: var(--card-bg);
+            box-shadow: var(--shadow);
+        }
+
+        .connection-status i {
+            font-size: 0.7rem;
+        }
+
+        .sidebar-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .sidebar-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: var(--shadow);
+        }
+
+        .sidebar-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-btn.clear {
+            background: linear-gradient(135deg, var(--error-color), #d32f2f);
+            color: white;
+        }
+
+        .sidebar-btn i {
+            font-size: 1.1rem;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-color: var(--bg-color);
+        }
+
+        .chat-box {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 1rem 1.25rem;
+            border-radius: 16px;
+            position: relative;
+            animation: fadeIn 0.3s;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--message-user-bg), #d4e6f9);
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.assistant {
+            align-self: flex-start;
+            background-color: var(--message-assistant-bg);
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: 0.5rem;
+            text-align: right;
+        }
+
+        .message-actions {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            display: none;
+            gap: 0.25rem;
+        }
+
+        .message:hover .message-actions {
+            display: flex;
+        }
+
+        .message-action {
+            background: rgba(0, 0, 0, 0.1);
+            border: none;
+            border-radius: 50%;
+            width: 1.5rem;
+            height: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.7rem;
+            color: inherit;
+            transition: all 0.2s;
+        }
+
+        .message-action:hover {
+            background: rgba(0, 0, 0, 0.2);
+            transform: scale(1.1);
+        }
+
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.25rem;
+            background-color: var(--message-assistant-bg);
+            border-radius: 16px;
+            align-self: flex-start;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: typing-dot 1.4s infinite ease-in-out both;
+        }
+
+        .typing-dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes typing-dot {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0.8);
+            }
+
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        .input-area {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 0.75rem;
+            background-color: var(--card-bg);
+            z-index: 5;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        #user-input {
+            flex: 1;
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 0.9rem 1.25rem 0.9rem 1.25rem;
+            resize: none;
+            min-height: 3.5rem;
+            max-height: 10rem;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            font-family: inherit;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+        }
+
+        #user-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(230, 57, 70, 0.2);
+        }
+
+        .input-buttons {
+            position: absolute;
+            right: 0.75rem;
+            bottom: 0.75rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .input-btn {
+            background: none;
+            border: none;
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-color);
+            transition: all 0.2s;
+        }
+
+        .input-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+            transform: scale(1.05);
+        }
+
+        .input-btn.primary {
+            background: linear-gradient(135deg,
+                    var(--accent-color),
+                    var(--accent-light));
+            color: white;
+        }
+
+        .input-btn.primary:hover {
+            opacity: 0.9;
+            transform: scale(1.05);
+        }
+
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 350px;
+            background-color: var(--card-bg);
+            border-left: 1px solid var(--border-color);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transform: translateX(100%);
+            transition: transform 0.3s;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .settings-panel.open {
+            transform: translateX(0);
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .settings-close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-color);
+            font-size: 1.2rem;
+            transition: all 0.2s;
+        }
+
+        .settings-close:hover {
+            transform: scale(1.1);
+        }
+
+        .settings-group {
+            margin-bottom: 1.75rem;
+            background: var(--sidebar-bg);
+            padding: 1.25rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .settings-group h3 {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            color: var(--accent-color);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group input[type="password"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            transition: all 0.2s;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="number"]:focus,
+        .form-group input[type="password"]:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(230, 57, 70, 0.2);
+        }
+
+        .form-group input[type="range"] {
+            width: 100%;
+        }
+
+        .range-value {
+            text-align: center;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            color: var(--accent-color);
+            font-weight: 500;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .settings-footer {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        #save-settings {
+            background: linear-gradient(135deg,
+                    var(--accent-color),
+                    var(--accent-light));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        #save-settings:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.9rem 1.75rem;
+            border-radius: 24px;
+            background: var(--text-color);
+            color: var(--bg-color);
+            box-shadow: var(--shadow);
+            display: none;
+            z-index: 1000;
+            animation: toast-in 0.3s, toast-out 0.3s 2.7s forwards;
+            font-weight: 500;
+        }
+
+        @keyframes toast-in {
+            from {
+                opacity: 0;
+                transform: translate(-50%, 100%);
+            }
+
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+        }
+
+        @keyframes toast-out {
+            from {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translate(-50%, 100%);
+            }
+        }
+
+        .toast.success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .toast.warning {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .toast.error {
+            background: var(--error-color);
+            color: white;
+        }
+
+        .password-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .password-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .password-container {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: var(--shadow);
+            transform: translateY(20px);
+            transition: transform 0.3s;
+        }
+
+        .password-modal.active .password-container {
+            transform: translateY(0);
+        }
+
+        .password-header {
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .password-header h2 {
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .password-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .password-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .password-btn.cancel {
+            background: transparent;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .password-btn.submit {
+            background: linear-gradient(135deg,
+                    var(--accent-color),
+                    var(--accent-light));
+            color: white;
+        }
+
+        .password-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                z-index: 20;
+                box-shadow: var(--shadow);
+            }
+
+            .message {
+                max-width: 90%;
+            }
+
+            .settings-panel {
+                width: 100%;
+            }
+        }
+
+        /* Car-themed decorative elements */
+        .car-element {
+            position: absolute;
+            opacity: 0.03;
+            z-index: 0;
+        }
+
+        .wheel {
+            width: 120px;
+            height: 120px;
+            border: 10px solid var(--accent-color);
+            border-radius: 50%;
+            top: 10%;
+            right: 10%;
+        }
+
+        .speed-line {
+            width: 200px;
+            height: 2px;
+            background: var(--accent-color);
+            transform: rotate(-30deg);
+            top: 70%;
+            left: 5%;
+        }
+
+        .speed-line:nth-child(2) {
+            top: 75%;
+            left: 10%;
+            width: 150px;
+        }
+
+        .speed-line:nth-child(3) {
+            top: 80%;
+            left: 15%;
+            width: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="car-element wheel"></div>
+    <div class="car-element speed-line"></div>
+    <div class="car-element speed-line"></div>
+    <div class="car-element speed-line"></div>
+
+    <div class="header">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-car"></i>
+            </div>
+            <div>
+                <div>AutoVista</div>
+                <div class="tagline">Your window to every car detail</div>
+            </div>
+        </div>
+        <div class="controls">
+            <button id="theme-toggle" class="btn">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button id="settings-toggle" class="btn">
+                <i class="fas fa-cog"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Password Modal -->
+    <div class="password-modal" id="password-modal">
+        <div class="password-container">
+            <div class="password-header">
+                <h2>Enter Password</h2>
+                <p>Please enter the password to access settings</p>
+            </div>
+            <div class="form-group">
+                <label for="password-input">Password</label>
+                <input type="password" id="password-input" placeholder="Enter password" />
+            </div>
+            <div class="password-footer">
+                <button class="password-btn cancel" id="cancel-password">Cancel</button>
+                <button class="password-btn submit" id="submit-password">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="sidebar">
+            <div class="connection-status" id="connection-status">
+                <i class="fas fa-circle"></i>
+                <span>Connecting...</span>
+            </div>
+            <div class="sidebar-controls">
+                <button id="clear" class="sidebar-btn clear">
+                    <i class="fas fa-trash"></i> Clear Chat History
+                </button>
+            </div>
+        </div>
+
+        <div class="chat-container">
+            <div class="chat-box" id="chat-box">
+                <div class="message assistant">
+                    <strong>AutoVista Assistant:</strong> Hello! I'm your AutoVista
+                    assistant, your window to every car detail. I can help you with car
+                    specifications, comparisons, maintenance tips, and more. What would
+                    you like to know about today?
+                    <div class="message-time">Just now</div>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <div class="input-wrapper">
+                    <textarea id="user-input" placeholder="Ask about any car detail..." rows="1"></textarea>
+                    <div class="input-buttons">
+                        <button id="send" class="input-btn primary">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="settings-panel" id="settings-panel">
+        <div class="settings-header">
+            <h2>AutoVista Settings</h2>
+            <button class="settings-close" id="close-settings">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="settings-group">
+            <h3>Connection</h3>
+            <div class="form-group">
+                <label for="api-url">API URL</label>
+                <input type="text" id="api-url" placeholder="https://inveros-tech-RAG-AUTO-VISTA.hf.space" />
+            </div>
+        </div>
+        <div class="settings-group">
+            <h3>Car Preferences</h3>
+            <div class="form-group">
+                <label for="preferred-units">Preferred Units</label>
+                <select id="preferred-units" style="
+              width: 100%;
+              padding: 0.75rem;
+              border-radius: 8px;
+              background: var(--card-bg);
+              color: var(--text-color);
+              border: 1px solid var(--border-color);
+            ">
+                    <option>Metric (km, L/100km)</option>
+                    <option>Imperial (miles, mpg)</option>
+                </select>
+            </div>
+        </div>
+        <div class="settings-group">
+            <h3>Password Protection</h3>
+            <div class="form-group">
+                <label for="settings-password">Settings Password</label>
+                <input type="password" id="settings-password" placeholder="Enter new password" />
+            </div>
+            <div class="form-group">
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" placeholder="Confirm new password" />
+            </div>
+        </div>
+        <div class="settings-footer">
+            <button id="save-settings">Save Settings</button>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+    <script>
+        // Configuration
+        const config = {
+            apiUrl:
+                localStorage.getItem("apiUrl") ||
+                "https://inveros-tech-RAG-AUTO-VISTA.hf.space",
+            maxChatHistory: 10,
+            typingIndicatorDelay: 300,
+            reconnectDelay: 5000,
+            settingsPassword: localStorage.getItem("settingsPassword") || "carzone99"
+        };
+
+        // Global variables
+        let chatState = [];
+        let memoryState = [];
+        let typingIndicatorTimeout = null;
+        let currentAssistantMessageDiv = null;
+        let eventSource = null;
+        let reconnectAttempts = 0;
+        let maxReconnectAttempts = 3;
+
+        // DOM elements
+        const chatBox = document.getElementById("chat-box");
+        const userInput = document.getElementById("user-input");
+        const sendBtn = document.getElementById("send");
+        const clearBtn = document.getElementById("clear");
+        const themeToggle = document.getElementById("theme-toggle");
+        const settingsToggle = document.getElementById("settings-toggle");
+        const settingsPanel = document.getElementById("settings-panel");
+        const saveSettingsBtn = document.getElementById("save-settings");
+        const closeSettingsBtn = document.getElementById("close-settings");
+        const apiUrlInput = document.getElementById("api-url");
+        const toast = document.getElementById("toast");
+        const connectionStatus = document.getElementById("connection-status");
+        const passwordModal = document.getElementById("password-modal");
+        const passwordInput = document.getElementById("password-input");
+        const submitPasswordBtn = document.getElementById("submit-password");
+        const cancelPasswordBtn = document.getElementById("cancel-password");
+        const settingsPasswordInput = document.getElementById("settings-password");
+        const confirmPasswordInput = document.getElementById("confirm-password");
+
+        // Initialize UI
+        function initializeUI() {
+            apiUrlInput.value = config.apiUrl;
+
+            // Set theme based on preference
+            if (localStorage.getItem("darkMode") === "true") {
+                document.body.classList.add("dark-mode");
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+
+            // Auto-resize textarea
+            userInput.addEventListener("input", function () {
+                this.style.height = "auto";
+                this.style.height = this.scrollHeight + "px";
+            });
+        }
+
+        // Append message to chat with sanitization
+        function appendMessage(role, text, timestamp = new Date()) {
+            const message = document.createElement("div");
+            message.className = `message ${role}`;
+
+            // Generate unique ID for the message
+            const messageId =
+                "msg-" + Date.now() + "-" + Math.random().toString(36).substr(2, 9);
+            message.setAttribute("data-message-id", messageId);
+
+            // Sanitize and parse markdown
+            const cleanText = DOMPurify.sanitize(marked.parse(text));
+
+            message.innerHTML = `
+        ${cleanText}
+        <div class="message-time">${timestamp.toLocaleTimeString()}</div>
+        <div class="message-actions">
+            <button class="message-action" title="Copy"><i class="fas fa-copy"></i></button>
+            <button class="message-action" title="Delete"><i class="fas fa-trash"></i></button>
+        </div>
+    `;
+
+            // Add event listeners to action buttons
+            const copyBtn = message.querySelector(".message-action:first-child");
+            const deleteBtn = message.querySelector(".message-action:last-child");
+
+            copyBtn.addEventListener("click", () => {
+                navigator.clipboard.writeText(text);
+                showToast("Message copied to clipboard", "success");
+            });
+
+            deleteBtn.addEventListener("click", () => {
+                message.remove();
+                showToast("Message deleted", "info");
+            });
+
+            chatBox.appendChild(message);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            return message;
+        }
+
+        // Show typing indicator
+        function showTypingIndicator() {
+            if (document.querySelector(".typing-indicator")) return;
+
+            const typingDiv = document.createElement("div");
+            typingDiv.className = "typing-indicator";
+            typingDiv.innerHTML = `
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <span>AutoVista is researching...</span>
+        `;
+            chatBox.appendChild(typingDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Hide typing indicator
+        function hideTypingIndicator() {
+            const typingIndicator = document.querySelector(".typing-indicator");
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        // Show toast notification
+        function showToast(message, type = "info", duration = 3000) {
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.style.display = "block";
+
+            setTimeout(() => {
+                toast.style.display = "none";
+            }, duration);
+        }
+
+        // Show error message
+        function showError(message) {
+            showToast(message, "error");
+        }
+
+        // Update connection status
+        function updateConnectionStatus(connected) {
+            if (connected) {
+                connectionStatus.innerHTML =
+                    '<i class="fas fa-circle" style="color: #2ecc71;"></i> Connected to AutoVista';
+                connectionStatus.style.color = "#2ecc71";
+            } else {
+                connectionStatus.innerHTML =
+                    '<i class="fas fa-circle" style="color: #e74c3c;"></i> Disconnected';
+                connectionStatus.style.color = "#e74c3c";
+            }
+        }
+
+        // Send query to backend with auto-reconnect
+        function sendQuery(query = null) {
+            const queryText = query || userInput.value.trim();
+            if (!queryText) return;
+
+            // If coming from text input, clear the input
+            if (!query) {
+                appendMessage("user", queryText);
+                userInput.value = "";
+                userInput.style.height = "auto";
+            } else {
+                appendMessage("user", queryText);
+            }
+
+            // Show typing indicator after a short delay
+            if (typingIndicatorTimeout) {
+                clearTimeout(typingIndicatorTimeout);
+            }
+            typingIndicatorTimeout = setTimeout(() => {
+                showTypingIndicator();
+            }, config.typingIndicatorDelay);
+
+            // Close any existing event source
+            if (eventSource) {
+                eventSource.close();
+            }
+
+            fetch(`${config.apiUrl}/chat/stream/start`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    user_query: queryText,
+                    chat_state: chatState,
+                    memory_state: memoryState,
+                }),
+            })
+                .then((res) => {
+                    if (!res.ok) {
+                        throw new Error(`HTTP error! status: ${res.status}`);
+                    }
+                    return res.json();
+                })
+                .then((data) => {
+                    updateConnectionStatus(true);
+                    reconnectAttempts = 0;
+
+                    const sessionId = data.session_id;
+                    eventSource = new EventSource(
+                        `${config.apiUrl}/chat/stream?session_id=${sessionId}`
+                    );
+
+                    eventSource.onmessage = (event) => {
+                        hideTypingIndicator();
+                        const data = JSON.parse(event.data);
+
+                        if (data.final) {
+                            chatState = data.chat_state;
+                            memoryState = data.memory_state;
+                            eventSource.close();
+                            currentAssistantMessageDiv = null;
+                        } else {
+                            const assistantMessage = DOMPurify.sanitize(
+                                marked.parse(data.partial_response)
+                            );
+
+                            if (!currentAssistantMessageDiv) {
+                                currentAssistantMessageDiv = document.createElement("div");
+                                currentAssistantMessageDiv.className = "message assistant";
+                                currentAssistantMessageDiv.innerHTML = assistantMessage;
+                                chatBox.appendChild(currentAssistantMessageDiv);
+                            } else {
+                                currentAssistantMessageDiv.innerHTML = assistantMessage;
+                            }
+                            chatBox.scrollTop = chatBox.scrollHeight;
+                        }
+                    };
+
+                    eventSource.onerror = (err) => {
+                        console.error("SSE error", err);
+                        hideTypingIndicator();
+
+                        if (reconnectAttempts < maxReconnectAttempts) {
+                            reconnectAttempts++;
+                            showToast(
+                                `Connection lost. Reconnecting (${reconnectAttempts}/${maxReconnectAttempts})...`,
+                                "warning"
+                            );
+                            setTimeout(() => sendQuery(queryText), config.reconnectDelay);
+                        } else {
+                            appendMessage("assistant", "[Error] Connection closed.");
+                            updateConnectionStatus(false);
+                            eventSource.close();
+                            currentAssistantMessageDiv = null;
+                        }
+                    };
+                })
+                .catch((err) => {
+                    console.error("Failed to send query", err);
+                    hideTypingIndicator();
+                    appendMessage("assistant", "[Error] Unable to send request.");
+                    updateConnectionStatus(false);
+
+                    if (reconnectAttempts < maxReconnectAttempts) {
+                        reconnectAttempts++;
+                        showToast(
+                            `Connection error. Retrying (${reconnectAttempts}/${maxReconnectAttempts})...`,
+                            "warning"
+                        );
+                        setTimeout(() => sendQuery(queryText), config.reconnectDelay);
+                    }
+                });
+        }
+
+        // Clear chat history
+        function clearChat() {
+            fetch(`${config.apiUrl}/chat/clear`, { method: "POST" })
+                .then((res) => res.json())
+                .then((data) => {
+                    chatState = data.chat_state;
+                    memoryState = data.memory_state;
+                    chatBox.innerHTML = "";
+                    userInput.value = "";
+                    showToast("Chat cleared", "success");
+                })
+                .catch(() => {
+                    appendMessage("assistant", "[Error] Unable to clear chat.");
+                    showToast("Failed to clear chat", "error");
+                });
+        }
+
+        // Password verification
+        function verifyPassword() {
+            const enteredPassword = passwordInput.value.trim();
+            if (enteredPassword === config.settingsPassword) {
+                passwordModal.classList.remove("active");
+                passwordInput.value = "";
+                settingsPanel.classList.add("open");
+                showToast("Access granted", "success");
+            } else {
+                showToast("Incorrect password", "error");
+                passwordInput.value = "";
+            }
+        }
+
+        // Initialize event listeners
+        function initializeEventListeners() {
+            // Send button and input
+            sendBtn.addEventListener("click", () => sendQuery());
+            userInput.addEventListener("keypress", (e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    sendQuery();
+                }
+            });
+
+            // Clear chat
+            clearBtn.addEventListener("click", clearChat);
+
+            // Theme toggle
+            themeToggle.addEventListener("click", () => {
+                document.body.classList.toggle("dark-mode");
+                const isDark = document.body.classList.contains("dark-mode");
+                themeToggle.innerHTML = isDark
+                    ? '<i class="fas fa-sun"></i>'
+                    : '<i class="fas fa-moon"></i>';
+                localStorage.setItem("darkMode", isDark);
+            });
+
+            // Settings panel with password protection
+            settingsToggle.addEventListener("click", () => {
+                passwordModal.classList.add("active");
+                passwordInput.focus();
+            });
+
+            // Password modal
+            submitPasswordBtn.addEventListener("click", verifyPassword);
+
+            passwordInput.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") {
+                    verifyPassword();
+                }
+            });
+
+            cancelPasswordBtn.addEventListener("click", () => {
+                passwordModal.classList.remove("active");
+                passwordInput.value = "";
+            });
+
+            closeSettingsBtn.addEventListener("click", () => {
+                settingsPanel.classList.remove("open");
+            });
+
+            // Save settings
+            saveSettingsBtn.addEventListener("click", () => {
+                config.apiUrl = apiUrlInput.value.trim();
+
+                // Update password if provided and confirmed
+                const newPassword = settingsPasswordInput.value.trim();
+                const confirmPassword = confirmPasswordInput.value.trim();
+
+                if (newPassword && confirmPassword) {
+                    if (newPassword === confirmPassword) {
+                        config.settingsPassword = newPassword;
+                        localStorage.setItem("settingsPassword", newPassword);
+                        showToast("Settings and password saved", "success");
+                    } else {
+                        showToast("Passwords do not match", "error");
+                        return;
+                    }
+                } else if (newPassword || confirmPassword) {
+                    showToast("Please fill both password fields", "error");
+                    return;
+                } else {
+                    showToast("Settings saved", "success");
+                }
+
+                localStorage.setItem("apiUrl", config.apiUrl);
+                settingsPanel.classList.remove("open");
+            });
+
+            // Close settings when clicking outside
+            document.addEventListener("click", (e) => {
+                if (
+                    !settingsPanel.contains(e.target) &&
+                    e.target !== settingsToggle
+                ) {
+                    settingsPanel.classList.remove("open");
+                }
+            });
+
+            // Cleanup on page unload
+            window.addEventListener("beforeunload", () => {
+                if (eventSource) {
+                    eventSource.close();
+                }
+            });
+        }
+
+        // Initialize the app
+        function initializeApp() {
+            initializeUI();
+            initializeEventListeners();
+            updateConnectionStatus(false);
+
+            // Check initial connection
+            fetch(`${config.apiUrl}/chat/`)
+                .then(() => updateConnectionStatus(true))
+                .catch(() => updateConnectionStatus(false));
+        }
+
+        // Start the app
+        initializeApp();
+    </script>
+</body>
+
+</html>

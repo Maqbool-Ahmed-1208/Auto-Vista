@@ -1,0 +1,96 @@
+# ====================
+# Core Data Libraries
+# ====================
+pandas>=2.0.0
+numpy>=1.24.0  # Required for math and signal processing
+
+# ============================
+# File and Directory Handling
+# ============================
+glob2>=0.7
+openpyxl  # Excel processing
+pypdf     # PDF processing
+
+# ======================
+# Environment Variables
+# ======================
+python-dotenv>=1.0.0
+dotenv  # Redundant but sometimes required for legacy support
+
+# ================================
+# Machine Learning & NLP Tooling
+# ================================
+transformers>=4.41.1
+# torch>=2.2.0  # Optional but usually required with transformers
+
+# ====================
+# LangChain Ecosystem
+# ====================
+langchain>=0.1.16
+langchain-core>=0.1.40
+langchain-community>=0.0.32
+langchain-text-splitters>=0.0.1
+
+# ==================
+# OpenAI Integration
+# ==================
+openai>=1.30.1
+
+# ================
+# Vector Databases
+# ================
+pinecone
+pinecone[grpc]
+
+# ============
+# Audio Stack
+# ============
+# portaudio==19.6.0
+sounddevice
+soundfile
+assemblyai[extras]
+SpeechRecognition
+PyWavelets==1.8.0  # For signal processing
+matplotlib         # For audio visualization
+# pipwin             # For Windows-based audio driver installs
+# pyaudio-wheels
+# pyaudio>=0.2.14
+# pyaudio==0.2.11
+
+# ========================
+# Web Framework & Runtime
+# ========================
+fastapi
+uvicorn
+
+# =======================
+# WebSocket Communication
+# =======================
+websocket-client
+# websocket
+
+# ==================
+# Optional Dev Tools
+# ==================
+# ipykernel>=6.29.0
+# jupyter>=1.0.0
+
+# ===================
+# UI Framework (TBD)
+# ===================
+# gradio>=4.28.0
+# gradio
+
+# ===========
+# Hardware AI
+# ===========
+groq
+
+# ============
+# Experimental
+# ============
+# rnnoise-cli
+
+
+cartesia
+ffmpeg
