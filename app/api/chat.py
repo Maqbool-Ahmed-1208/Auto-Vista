@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Response
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from app.models.chat import ChatRequest
 from app.services.chat_service import (
@@ -15,6 +15,14 @@ router = APIRouter()
 # In-memory session store (for dev only)
 chat_sessions = {}
 
+
+@router.get("/health")
+def health():
+    return {"status": "ok"}
+
+@router.head("/health")
+def health_head():
+    return Response(status_code=200)
 
 @router.get("/")
 def serve_chat_html():
